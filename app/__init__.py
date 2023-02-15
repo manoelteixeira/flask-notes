@@ -12,7 +12,7 @@ from app.utils import app_logger
 db = SQLAlchemy()
 login_manager = LoginManager()
 logger = app_logger(logger_name=__name__,
-                    output_filename='flask-calendar',
+                    output_filename='flask-note',
                     level='info')
 
 
@@ -22,7 +22,7 @@ def create_app(test_config: dict = None, config_file: str = None) -> Flask:
     TODO:
         - Exception handling on creating instance folder.
     """
-    print(config_file)
+    
     # Make sure instance folder exists
     if not os.path.isdir('instance'):
         os.makedirs('/instance')
@@ -60,6 +60,12 @@ def create_app(test_config: dict = None, config_file: str = None) -> Flask:
         app.cli.add_command(init_db)
         
     # Register blueprints (Routes)
+    from app.blueprints import auth_bp
+    from app.blueprints import index_bp
+    
+    app.register_blueprint(index_bp)
+    app.register_blueprint(auth_bp)
+    
     
     @app.route(rule='/hello')
     def hello():
@@ -71,7 +77,7 @@ def create_app(test_config: dict = None, config_file: str = None) -> Flask:
 # Flask App command line commands
 @click.command('init-db')
 def init_db():
-    from app.models import Event
+    from app.models import Note
     from app.models import User
     try:
         db.drop_all()

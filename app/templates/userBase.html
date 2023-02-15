@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block navbar_content %}
+    {% if 'home' in request.url %}
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('index.profile') }}">Profile</a>
+        </li>
+    {% elif 'profile' in  request.url %}
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('index.home') }}">Home</a>
+        </li>
+    {% endif %}
+    
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+    </li>
+{% endblock%}
