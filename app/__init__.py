@@ -24,6 +24,7 @@ def create_app(test_config: dict = None, config_file: str = None) -> Flask:
     """
     
     # Make sure instance folder exists
+    logger.info('Making sure instance folder exists')
     if not os.path.isdir('instance'):
         os.makedirs('/instance')
         logger.info('creating instance folder')
@@ -32,8 +33,8 @@ def create_app(test_config: dict = None, config_file: str = None) -> Flask:
     app = Flask(import_name=__name__,
                 instance_relative_config=True)
     
-    
     # Load Configuration
+    logger.info('Loading configurations')
     if test_config:
         app.config.from_mapping(test_config)
     else:
@@ -50,8 +51,10 @@ def create_app(test_config: dict = None, config_file: str = None) -> Flask:
     for item in config_list:
         if not app.config.get(item):
             logger.warn(f'{item} not set')
-                
+            
+    
     # Initializing Extentions            
+    logger.info('Initializing Extentions')
     login_manager.init_app(app)
     db.init_app(app)
     
@@ -60,12 +63,12 @@ def create_app(test_config: dict = None, config_file: str = None) -> Flask:
         app.cli.add_command(init_db)
         
     # Register blueprints (Routes)
-    from app.blueprints import auth_bp
-    from app.blueprints import index_bp
+    logger.info('Regitering blueprints')
+    from app.blueprints import BLUEPRINTS
     
-    app.register_blueprint(index_bp)
-    app.register_blueprint(auth_bp)
-    
+    for bp in BLUEPRINTS:
+        logger.info(f'Route: {bp.name} added')
+        app.register_blueprint(bp)
     
     @app.route(rule='/hello')
     def hello():
@@ -80,9 +83,10 @@ def init_db():
     from app.models import Note
     from app.models import User
     try:
+        logger.info('Creating database')
         db.drop_all()
         db.create_all()
     except OperationalError as err:
-        logger.info('Trouble setting up database')
+        logger.error('Trouble setting up database')
         logger.error(err)
 

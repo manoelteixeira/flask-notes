@@ -5,12 +5,13 @@ from app import db
 
 
 class Note(db.Model):
+    __tablename__ = 'notes'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(), index=True, unique=False, nullable=False)
     content = db.Column(db.String(), index=True, unique=False, nullable=False)
     created_at = db.Column(db.DateTime(), index=True, unique=False, nullable=False)
     last_modified = db.Column(db.DateTime(), index=True, unique=False, nullable=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) # Foreign Key
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False) # Foreign Key
     
     def __init__(self, user_id:int, title:str, content:str) -> None:
         self.user_id = user_id

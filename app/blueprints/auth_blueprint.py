@@ -1,3 +1,4 @@
+# file: app/blueprints/auth_blueprints.py
 import sqlalchemy.exc as sql_error
 from flask import Blueprint
 from flask import render_template
@@ -26,10 +27,14 @@ bp = Blueprint(name='auth',
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
+
 @login_manager.unauthorized_handler
 def unauthorized():
     flash("Please log in.")
     return redirect(url_for('auth.login'))
+
+
 
 @bp.route(rule='/login', methods=['POST', 'GET'])
 def login():
@@ -55,13 +60,16 @@ def login():
                            form=login_form)
 
 
-@bp.route('/logout', methods=['GET'])
+
+@bp.route(rule='/logout', methods=['GET'])
 @login_required
 def logout():
-    logout_user()
-    flash(message='User Logged off.',
+    flash(message=f'{current_user.username} Logged off.',
           category='info')
+    logout_user()
     return redirect(url_for('auth.login'))
+
+
 
 @bp.route(rule='/register', methods=['POST', 'GET'])
 def register():

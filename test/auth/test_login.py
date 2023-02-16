@@ -1,3 +1,4 @@
+# file: test/auth/test_login.py
 '''
 Test Login Route
 '''
@@ -95,8 +96,8 @@ def test_auth_logout_logged_in_user(test_client, test_logged_user, test_user):
     
     assert response.status_code == 200
     response_data = response.data.decode()
-    
-    assert 'User Logged off.' in response_data
+    u_name = test_user.username
+    assert f'{u_name} Logged off.' in response_data
     assert 'Flask Notes' in response_data
     assert '<title>Flask Notes | Login</title>' in response_data
     assert 'href="/auth/register">Register</a>' in response_data 

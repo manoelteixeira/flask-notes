@@ -1,3 +1,4 @@
+# file: test/auth/test_register.py
 '''
 Test Register Route
 '''
