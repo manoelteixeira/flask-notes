@@ -1,5 +1,5 @@
 # file: app/blueprints/auth_blueprints.py
-import sqlalchemy.exc as sql_error
+from sqlalchemy.exc import IntegrityError
 from flask import Blueprint
 from flask import render_template
 from flask import url_for
@@ -12,10 +12,13 @@ from flask_login import logout_user
 from flask_login import current_user
 from app import db
 from app import login_manager
+from app import app_logger
 from app.forms import RegisterForm
 from app.forms import LoginForm
 from app.models import User
 
+
+logger = app_logger.new_logger(logger_name=__name__)
 
 bp = Blueprint(name='auth',
                import_name=__name__,
@@ -39,6 +42,7 @@ def unauthorized():
 @bp.route(rule='/login', methods=['POST', 'GET'])
 def login():
     if current_user.is_authenticated:
+        logger.info(current_user)
         flash('User already logged in.')
         return redirect(url_for('index.home'))
     
@@ -75,7 +79,6 @@ def logout():
 def register():
     form = RegisterForm()
     if request.method == 'POST':
-        
         if form.validate_on_submit():
             new_user = User(name=form.name.data,
                             username=form.username.data,
@@ -85,7 +88,8 @@ def register():
                 db.session.add(new_user)
                 db.session.commit()
                 return redirect(url_for('auth.login'))
-            except sql_error.IntegrityError as err:
+            except IntegrityError as err:
+                logger.info(f'Faild to register {new_user}')
                 args = err.args
                 if any('username' in arg for arg in args):
                     flash('Username already taken.',

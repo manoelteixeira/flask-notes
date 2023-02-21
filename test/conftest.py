@@ -2,15 +2,9 @@
 import pytest
 from os import unlink
 from os import path
-
-from app import create_app, db
+from app import create_app, db, app_logger
 from app.models import User
 from app.models import Note
-from app.utils import app_logger
-
-logger = app_logger(logger_name=__name__,
-                    output_filename='test-flask-note',
-                    level='info')
 
 
 @pytest.fixture(scope='module')

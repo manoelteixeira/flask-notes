@@ -1,4 +1,5 @@
 # file: app/models/note_model.py
+import markdown
 from warnings import warn
 from datetime import datetime
 from app import db
@@ -16,6 +17,7 @@ class Note(db.Model):
     def __init__(self, user_id:int, title:str, content:str) -> None:
         self.user_id = user_id
         self.title = title
+        # self.content = content.replace('\n','<br>')
         self.content = content
         self.created_at = self.last_modified = datetime.utcnow()
         
@@ -23,6 +25,9 @@ class Note(db.Model):
     def __repr__(self) -> str:
         return f"< id: {self.id} - user_id: {self.user_id} - created at: {self.created_at}>"
     
+    @property
+    def content_md(self) -> str:
+        return markdown.markdown(self.content.replace('\n','<br>'))
     
     def edit(self, title:str=None, content:str=None) -> None:
         title_changed = False

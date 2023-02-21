@@ -53,21 +53,4 @@ def test_add_new_note(test_logged_user, test_client, test_user):
     assert note.user_id == user.id
     
     
-    
-# def test_add_new_note_without_title(test_logged_user, test_client, test_user):
-#     '''
-#     GIVEN a Flask application configured for testing
-#     WHEN the '/notes/add-note' page is posted with a valid user logged and valid value for content
-#     THEN check if new note was stored and displayed correctly
-#     '''
-    
-#     note_content = 'Test Note Content'
-#     response = test_client.post('/notes/add-note',
-#                                 data=dict(title='',
-#                                     content=note_content),
-#                                 follow_redirects=True)
-#     assert response.status_code == 200
-#     response_data = response.data.decode()    
-#     assert 'New Note' in response_data
-#     assert note_content in response_data
-    
+

@@ -11,14 +11,14 @@ from flask import Response
 from flask_login import login_required
 from flask_login import current_user
 from app import db
+from app import app_logger
 from app.forms import AddNoteForm
 from app.models import Note
 from app.utils.note_utils import generate_title
 
-from app.utils.app_logger import app_logger
-logger = app_logger(logger_name=__name__,
-                    output_filename='flask-note',
-                    level='info')
+
+logger = app_logger.new_logger(logger_name=__name__)
+
 
 bp = Blueprint(name='notes', 
                import_name=__name__,
@@ -35,6 +35,7 @@ def add_note():
                         title=note_title,
                         content=note_content)
         db.session.add(new_note)
+        logger.info(f'Title: {note_title}\nContent: {note_content}')
         try:
             db.session.commit()
             flash(message='Note Created',
@@ -53,3 +54,43 @@ def add_note():
         return redirect(url_for('index.home'))
     else:
         return Response(status="200 OK")
+
+@bp.route(rule='/delete-note/id=<int:note_id>', methods=['GET'])
+@login_required
+def delete_note(note_id: int):
+    note = Note.query.get(note_id)
+    if note is None:
+        flash(message='Invalid Note Id',
+              category='error')
+        return redirect(url_for('index.home'))
+    if note.user_id != current_user.id:
+        flash(message='Note not found',
+              category='error')
+        return redirect(url_for('index.home'))
+    db.session.delete(note)
+    try:
+        db.session.commit()
+        flash(message='Note Deleted.',
+              category='info')
+    except Exception as err:
+        logger.error(f'Error Deleting Note - Note id: {note.id} - User id: {current_user.id}')
+        logger.error(err)
+        flash(message='Someting went wrond. Note could not be deleted.',
+              category='error')
+        db.session.rollback()
+    return redirect(url_for('index.home'))
+        
+        
+@bp.route(rule='/edit-note/id=<int:note_id>', methods=['GET', 'POST'])
+def edit_note(note_id: int):
+    note = Note.query.get(note_id)
+    if note is None:
+        flash(message='Invalid Note Id',
+              category='error')
+        return redirect(url_for('index.home'))
+    
+    edit_form = AddNoteForm()
+    return render_template('notes/edit_note.html',
+                           note=note,
+                           add_form=edit_form,
+                           edit_form=edit_form)
