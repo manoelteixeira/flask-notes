@@ -1,0 +1,22 @@
+{% extends 'userBase.html' %}
+
+<!-- Page Title -->
+{% block title %}Home{% endblock %}
+
+<!-- Page Content -->
+{% block content %}
+    <div class="container">
+    {% if notes  %}
+            <div class="accordion accordion-flush mt-5" id="notesAccordion">
+                {% from 'macros/render_note.html' import render_note as render_note %}
+                {% for idx, note in notes %}
+                    {{render_note(idx, note)}}
+                {% endfor %}
+            </div>              
+    {% else %}
+    <!-- No Notes Yet -->
+    <p class="text-center">No Notes Yet</p>
+        
+    {% endif %}    
+    </div>
+{% endblock%}

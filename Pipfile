@@ -9,6 +9,7 @@ flask-wtf = "*"
 flask-login = "*"
 flask-sqlalchemy = "*"
 email-validator = "*"
+markdown = "*"
 
 [dev-packages]
 pytest = "*"
