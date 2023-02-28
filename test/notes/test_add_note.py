@@ -43,9 +43,11 @@ def test_add_new_note(test_logged_user, test_client, test_user):
                                 follow_redirects=True)
     assert response.status_code == 200
     response_data = response.data.decode()
+    
     # Check if note was saved correctly
-    note = Note.query.filter_by(title=note_title).first()
-    user = User.query.filter_by(username=test_user.username).first()
+    
+    note = Note.query.filter_by(title=note_title).first() # Old way of doing things
+    user = User.query.filter_by(username=test_user.username).first() # Old way of doing things
     
     assert note.title == note_title
     assert note.content == note_content

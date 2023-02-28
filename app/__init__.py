@@ -1,6 +1,7 @@
 # file: app/__init__.py
 import os
 from flask import Flask
+from flask import render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from app.utils import AppLogger
@@ -60,7 +61,6 @@ def create_app(test_config: dict = None, config_file: str = None) -> Flask:
     
     for bp in BLUEPRINTS:
         app.register_blueprint(bp)
-    
     
     
     return app

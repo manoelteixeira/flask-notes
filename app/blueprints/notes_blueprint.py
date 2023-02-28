@@ -1,15 +1,12 @@
 # file: app/blueprints/notes_blueprints.py
-from datetime import datetime
-import sqlalchemy.exc as sql_error
 from flask import Blueprint
 from flask import render_template
 from flask import url_for
 from flask import redirect
 from flask import flash
-from flask import request
-from flask import Response
 from flask_login import login_required
 from flask_login import current_user
+from werkzeug.exceptions import abort
 from app import db
 from app import app_logger
 from app.forms import AddNoteForm
@@ -24,13 +21,24 @@ bp = Blueprint(name='notes',
                import_name=__name__,
                url_prefix='/notes')
 
-@bp.route(rule='/add-note', methods=['POST'])
+@bp.errorhandler(404)
+def not_found(err):
+    return render_template("4xx.html",
+                           error=err)
+
+@bp.errorhandler(403)
+def forbiden(err):
+    return render_template("4xx.html",
+                    error=err)
+
+
+@bp.route(rule='/add-note', methods=['GET', 'POST'])
 @login_required
 def add_note():
-    form = AddNoteForm()
-    if form.validate_on_submit():
-        note_content = form.content.data
-        note_title = form.title.data if form.title.data != '' else generate_title(note_content)
+    add_form = AddNoteForm()
+    if add_form.validate_on_submit():
+        note_content = add_form.content.data
+        note_title = add_form.title.data if add_form.title.data != '' else generate_title(note_content)
         new_note = Note(user_id=current_user.id,
                         title=note_title,
                         content=note_content)
@@ -39,39 +47,37 @@ def add_note():
         try:
             db.session.commit()
             flash(message='Note Created',
-                  category='info')
+                    category='info')
+            return redirect(url_for('index.home'))
+            
         except Exception as err:
             flash(message='There was a problem saving your note.')
             logger.error('Note Not Added')
             logger.error(err)
             db.session.rollback()
-            
-        
-    req_ref = request.referrer
-    if req_ref is not None and 'profile' in req_ref:
-        return redirect(url_for('index.profile'))
-    elif req_ref is not None and 'home' in req_ref:
-        return redirect(url_for('index.home'))
-    else:
-        return Response(status="200 OK")
+
+    return render_template('notes/note.html',
+                           title='Add Note',
+                           form=add_form)
+
 
 @bp.route(rule='/delete-note/id=<int:note_id>', methods=['GET'])
 @login_required
 def delete_note(note_id: int):
-    note = Note.query.get(note_id)
-    if note is None:
-        flash(message='Invalid Note Id',
-              category='error')
-        return redirect(url_for('index.home'))
+    ''' 
+    delete_note()
+    '''
+    note = Note.query.get_or_404(ident=note_id,
+                                 description='Note Not Found')
     if note.user_id != current_user.id:
-        flash(message='Note not found',
-              category='error')
-        return redirect(url_for('index.home'))
+        abort(403,
+              description=f'{current_user.name} does not own this note.')
+        
     db.session.delete(note)
     try:
         db.session.commit()
         flash(message='Note Deleted.',
-              category='info')
+              category='message')
     except Exception as err:
         logger.error(f'Error Deleting Note - Note id: {note.id} - User id: {current_user.id}')
         logger.error(err)
@@ -80,17 +86,33 @@ def delete_note(note_id: int):
         db.session.rollback()
     return redirect(url_for('index.home'))
         
-        
 @bp.route(rule='/edit-note/id=<int:note_id>', methods=['GET', 'POST'])
+@login_required
 def edit_note(note_id: int):
-    note = Note.query.get(note_id)
-    if note is None:
-        flash(message='Invalid Note Id',
-              category='error')
-        return redirect(url_for('index.home'))
+    ''' 
+    edit_note()
+    '''
+    note = Note.query.get_or_404(ident=note_id,
+                                 description='Note Not Found')
+    if note.user_id != current_user.id:
+        abort(403,
+              description=f'{current_user.name} does not own this note.')
     
-    edit_form = AddNoteForm()
-    return render_template('notes/edit_note.html',
-                           note=note,
-                           add_form=edit_form,
-                           edit_form=edit_form)
+    note_form = AddNoteForm(title=note.title,
+                            content=note.content)
+    if note_form.validate_on_submit():
+        title = note_form.title.data
+        content = note_form.content.data
+        note.edit(title=title,
+                  content=content)
+        try:
+            db.session.commit()
+            flash(message='Note saved.',
+                  category='info')
+            return redirect(url_for('index.home'))
+        except Exception as err:
+            flash('Something whent wrong. Note could not be updated.',
+                  category='error')
+    return render_template('notes/note.html',
+                           title='Edit Note',
+                           form=note_form)

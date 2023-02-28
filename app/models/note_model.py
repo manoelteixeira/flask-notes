@@ -27,7 +27,8 @@ class Note(db.Model):
     
     @property
     def content_md(self) -> str:
-        return markdown.markdown(self.content.replace('\n','<br>'))
+        # return markdown.markdown(self.content.replace('\n','<br>'))
+        return markdown.markdown(self.content)
     
     def edit(self, title:str=None, content:str=None) -> None:
         title_changed = False
