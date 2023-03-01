@@ -30,22 +30,11 @@
             <!-- End Navbar -->
         </header>
         <!-- Flashed Messages -->
+        {% from 'macros/render_flash_message.html' import render_flashed_message %}
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    {% if category == 'error' %}
-                        <div class="alert alert-danger text-center" role="alert">
-                            {{message}}
-                        </div>
-                    {% elif category == 'info' %}
-                        <div class="alert alert-info text-center" role="alert">
-                            {{message}}
-                        </div>
-                    {% elif category == 'message' %}
-                        <div class="alert alert-warning text-center" role="alert">
-                            {{message}}
-                        </div>
-                    {% endif %}
+                    {{render_flashed_message(category=category, message=message)}}
                 {% endfor %}
             {% endif %}
         {% endwith %}

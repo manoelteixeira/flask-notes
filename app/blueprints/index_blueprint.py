@@ -1,6 +1,4 @@
 # file: app/blueprints/index_blueprint.py
-from datetime import datetime
-import sqlalchemy.exc as sql_error
 from flask import Blueprint
 from flask import render_template
 from flask import url_for
@@ -25,8 +23,6 @@ def index():
     Home Page for logged out users
     '''
     if current_user.is_authenticated:
-        flash(message=f'{current_user.username}',
-              category='info')
         return redirect(url_for('index.home'))
             
     return render_template('notes/index.html')

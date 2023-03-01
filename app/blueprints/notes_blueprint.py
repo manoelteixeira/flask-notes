@@ -108,7 +108,7 @@ def edit_note(note_id: int):
         try:
             db.session.commit()
             flash(message='Note saved.',
-                  category='info')
+                  category='message')
             return redirect(url_for('index.home'))
         except Exception as err:
             flash('Something whent wrong. Note could not be updated.',

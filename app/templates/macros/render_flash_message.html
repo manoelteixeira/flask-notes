@@ -1,0 +1,12 @@
+{% set cat = [('error','alert-danger'), ('info','alert-info'), ('message','alert-sucess')] %}
+{% set category_dict = dict.form_keys(cat) %}
+
+
+{% macro render_flashed_message(category, message) -%}
+    {% if category_dict.get(category) %}
+        <div class="alert alert-dismissible fade show {{ category_dict[category] }} text-center" role="alert">
+            {{message}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endif %}
+{%- endmacro %}

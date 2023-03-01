@@ -1,7 +1,6 @@
 # file: app/__init__.py
 import os
 from flask import Flask
-from flask import render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from app.utils import AppLogger
