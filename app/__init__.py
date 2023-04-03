@@ -62,5 +62,4 @@ def create_app(test_config: dict = None, config_file: str = None) -> Flask:
         app.register_blueprint(bp)
     
     
-    
     return app

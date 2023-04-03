@@ -34,7 +34,8 @@ def load_user(user_id):
 
 @login_manager.unauthorized_handler
 def unauthorized():
-    flash("Please log in.")
+    flash("Please log in.",
+          category='error')
     return redirect(url_for('auth.login'))
 
 
@@ -43,7 +44,8 @@ def unauthorized():
 def login():
     if current_user.is_authenticated:
         logger.info(current_user)
-        flash('User already logged in.')
+        flash('User already logged in.',
+              category='info')
         return redirect(url_for('index.home'))
     
     login_form = LoginForm()
@@ -52,10 +54,10 @@ def login():
         user = User.query.filter_by(username=login_form.username.data).first()
         if user is None:
             flash(message='Username not found.',
-                  category='info')
+                  category='error')
         elif not user.check_password(password=login_form.password.data):
             flash(message='Password is incorrect',
-                  category='info')
+                  category='error')
         else:
             login_user(user= user, remember=login_form.remember.data)
             return redirect(url_for('index.home'))

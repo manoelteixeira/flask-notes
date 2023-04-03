@@ -1,0 +1,57 @@
+<!-- Internal Macros -->
+{% macro register() -%}
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('auth.register') }}">Register</a>
+    </li>
+{%- endmacro %}
+<!-- --- -->
+{% macro login() -%}
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+    </li>
+{%- endmacro %}
+<!-- --- -->
+{% macro logout() -%}
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('auth.logout') }}">Logout</a>
+    </li>
+{%- endmacro %}
+<!-- --- -->
+{% macro add_note() -%}
+    <li class="nav-item">
+        <a class="nav-link fw-bold text-primary" href="{{ url_for('notes.add_note') }}">Add Note</a>
+    </li>
+{%- endmacro %}
+<!-- --- -->
+{% macro profile() -%}
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('index.profile') }}">Profile</a>
+    </li>
+{%- endmacro %}
+<!-- --- -->
+{% macro home() -%}
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('index.home') }}">Home</a>
+    </li>
+{%- endmacro %}
+<!-- --- -->
+
+<!-- Render NavBar Macro -->
+{% macro render_nav(items) -%}
+    {% set options = ['login', 'logout', 'register', 'add-note', 'profile', 'home' ] %}
+    {%- for item in items %}
+        {% if item == 'login' %}
+            {{login()}}
+        {% elif item == 'logout' %}
+            {{logout()}}
+        {% elif item == 'register' %}
+            {{register()}}
+        {% elif item == 'add-note' %}
+            {{add_note()}}
+        {% elif item == 'profile' %}
+            {{profile()}}
+        {% elif item == 'home' %}
+            {{home()}}
+        {% endif %}
+    {%- endfor %}
+{%- endmacro %}

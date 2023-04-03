@@ -1,7 +1,14 @@
-{% extends 'userBase.html' %}
+{% extends 'base.html' %}
 
 <!-- Page Title -->
 {% block title %}Home{% endblock %}
+
+<!-- Page Nav -->
+{% block navbar_content %}
+    {% from 'macros/render_nav.html' import render_nav as render_nav %}
+    {{render_nav(items=['add-note', 'profile', 'logout'])}}
+{% endblock %}
+
 
 <!-- Page Content -->
 {% block content %}

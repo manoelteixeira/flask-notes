@@ -9,4 +9,4 @@ class AddNoteForm(FlaskForm):
     title = StringField(label='Title')
     content = TextAreaField(label='New Note',
                             validators=[DataRequired(message='You need to type someting.')])
-    submit = SubmitField(label='Add Note')
+    submit = SubmitField(label='Done')

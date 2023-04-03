@@ -1,6 +1,4 @@
 # file: app/blueprints/index_blueprint.py
-from datetime import datetime
-import sqlalchemy.exc as sql_error
 from flask import Blueprint
 from flask import render_template
 from flask import url_for
@@ -18,13 +16,13 @@ logger = app_logger.new_logger(logger_name=__name__)
 bp = Blueprint(name='index', 
                import_name=__name__)
 
+
 @bp.route(rule='/', methods=['GET', 'POST'])
 def index():
     ''' 
     Home Page for logged out users
     '''
     if current_user.is_authenticated:
-        flash(message=f'{current_user.username}')
         return redirect(url_for('index.home'))
             
     return render_template('notes/index.html')
@@ -34,14 +32,12 @@ def index():
 @bp.route(rule='/home', methods=['GET'])
 @login_required
 def home():
-    add_form = AddNoteForm()
+    
     notes = Note.query.filter(Note.user_id==current_user.id).order_by(Note.last_modified.desc()).all()
-    # notes = Note.query.filter(Note.user_id==2).order_by(Note.last_modified.desc()).all()
     
     user_notes = enumerate(notes) if len(notes) > 0 else None
     
     return render_template('notes/home.html',
-                           add_form=add_form,
                            notes=user_notes)
 
 
